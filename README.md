@@ -16,6 +16,7 @@ The goal of this project is to demonstrate how modern DevOps tools work together
 - Deploy them instantly to Kubernetes
 
 This ensures continuous integration, continuous delivery, and **zero-downtime deployments** across both applications.
+
 ---
 
 ## 📖 Project Overview
