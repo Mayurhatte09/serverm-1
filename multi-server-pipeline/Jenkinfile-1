@@ -1,0 +1,98 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_HUB_USER = 'mayrhatte09'
+        SERVER_REPO = 'https://github.com/Mayurhatte09/serverm-1.git'
+        FINALCRUD_REPO = 'https://github.com/Mayurhatte09/FInalCRUDwithMongoose-Sequelize-1.git'
+    }
+
+    stages {
+        // ---------- SERVERM PROJECT ----------
+        stage('Checkout Serverm') {
+            steps {
+                dir('serverm') {
+                    git url: "${SERVER_REPO}", branch: 'main'
+                }
+            }
+        }
+
+        stage('Build & Push Serverm Image') {
+            steps {
+                dir('serverm') {
+                    script {
+                        def imageName = 'serverm-app'
+                        sh 'npm install'
+
+                        sh "docker build -t ${imageName}:v${BUILD_NUMBER} ."
+
+                        withCredentials([string(credentialsId: 'dockerhub-pass', variable: 'DOCKER_HUB_PASS')]) {
+                            sh """
+                              echo "${DOCKER_HUB_PASS}" | docker login -u "${DOCKER_HUB_USER}" --password-stdin
+                              docker tag ${imageName}:v${BUILD_NUMBER} ${DOCKER_HUB_USER}/${imageName}:v${BUILD_NUMBER}
+                              docker push ${DOCKER_HUB_USER}/${imageName}:v${BUILD_NUMBER}
+                            """
+                        }
+
+                        sh """
+                          sed -i "s|${DOCKER_HUB_USER}/${imageName}:v[0-9]*|${DOCKER_HUB_USER}/${imageName}:v${BUILD_NUMBER}|g" server-deploy.yaml
+                          echo " Updated server-deploy.yaml image to ${DOCKER_HUB_USER}/${imageName}:v${BUILD_NUMBER}"
+                        """
+
+                        sh """
+                          kubectl apply -f server-deploy.yaml
+                          kubectl rollout restart deployment serverm
+                        """
+                    }
+                }
+            }
+        }
+
+        // ---------- FINALCRUD PROJECT ----------
+        stage('Checkout FinalCRUD') {
+            steps {
+                dir('finalcrud') {
+                    git url: "${FINALCRUD_REPO}", branch: 'main'
+                }
+            }
+        }
+
+        stage('Build & Push FinalCRUD Image') {
+            steps {
+                dir('finalcrud') {
+                    script {
+                        def imageName = 'finalcrud-app'
+                        sh 'npm install'
+
+                        sh "docker build -t ${imageName}:v${BUILD_NUMBER} ."
+
+                        withCredentials([string(credentialsId: 'dockerhub-pass', variable: 'DOCKER_HUB_PASS')]) {
+                            sh """
+                              echo "${DOCKER_HUB_PASS}" | docker login -u "${DOCKER_HUB_USER}" --password-stdin
+                              docker tag ${imageName}:v${BUILD_NUMBER} ${DOCKER_HUB_USER}/${imageName}:v${BUILD_NUMBER}
+                              docker push ${DOCKER_HUB_USER}/${imageName}:v${BUILD_NUMBER}
+                            """
+                        }
+
+                        sh """
+                          sed -i "s|${DOCKER_HUB_USER}/${imageName}:v[0-9]*|${DOCKER_HUB_USER}/${imageName}:v${BUILD_NUMBER}|g" finalcrud-deploy.yaml
+                          echo " Updated finalcrud-deploy.yaml image to ${DOCKER_HUB_USER}/${imageName}:v${BUILD_NUMBER}"
+                        """
+
+                        sh """
+                          kubectl apply -f finalcrud-deploy.yaml
+                          kubectl rollout restart deployment finalcrud
+                        """
+                    }
+                }
+            }
+        }
+
+        // ---------- STATUS ----------
+        stage('Verify Kubernetes Pods') {
+            steps {
+                sh "kubectl get pods -o wide"
+            }
+        }
+    }
+}
