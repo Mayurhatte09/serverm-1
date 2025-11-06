@@ -4,6 +4,20 @@
 ## Automated CI/CD with Jenkins, Docker & Kubernetes
 ***
 
+## 🔥 About the Project
+This repository showcases a **fully automated CI/CD pipeline** for two Node.js microservices:
+- ServerM (simple Node.js server)
+- FinalCRUD (CRUD API with MongoDB and MySQL)
+
+The goal of this project is to demonstrate how modern DevOps tools work together to:
+- Build and test code automatically
+- Package applications as Docker images
+- Push versions to Docker Hub
+- Deploy them instantly to Kubernetes
+
+This ensures continuous integration, continuous delivery, and **zero-downtime deployments** across both applications.
+---
+
 ## 📖 Project Overview
 Serverm is a Node.js microservice designed to demonstrate a full CI/CD workflow using Jenkins, Docker, and Kubernetes.  
 Once set up, your pipeline will automatically:
@@ -189,6 +203,5 @@ GitHub → Jenkins (Build) → Docker Hub (Push) → Kubernetes (Deploy)
 ```
 
 This setup delivers complete automation from code commit to deployment with zero manual effort.
-
-
 ***
+
