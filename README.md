@@ -182,3 +182,13 @@ NodePort or LoadBalancer URL
 - Expertise: AWS Cloud, Jenkins, Docker, Kubernetes, DevOps Pipelines
 
 ***
+
+### 🌐 Pipeline Flow Diagram
+```
+GitHub → Jenkins (Build) → Docker Hub (Push) → Kubernetes (Deploy)
+```
+
+This setup delivers complete automation from code commit to deployment with zero manual effort.
+
+
+***
