@@ -50,7 +50,7 @@ pipeline {
         stage('Kubernetes Deploy') {
             steps {
                 sh """
-                  kubectl apply -f ${DEPLOY_FILE}
+                  kubectl apply -f server-deploy.yaml
                   kubectl rollout restart deployment serverm
                   kubectl get pods -o wide
                 """
