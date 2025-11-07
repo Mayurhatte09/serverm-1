@@ -92,7 +92,10 @@ cd serverm-1
 npm install
 npm start
 ```
-
+### install npm on Amazon Linux / CentOS / RHEL
+```
+sudo yum install -y nodejs npm
+```
 ### Step 3: Dockerize the Application
 Build the Docker image:
 ```
