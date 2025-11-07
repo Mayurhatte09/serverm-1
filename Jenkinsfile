@@ -14,12 +14,6 @@ pipeline {
             }
         }
 
-       // stage('Install Dependencies') {
-       //     steps {
-           //     sh 'npm install'
-         //   }
-      //  }
-
         stage('Docker Build') {
             steps {
                 sh 'docker build -t ${IMAGE_NAME}:v${BUILD_NUMBER} .'
@@ -38,7 +32,7 @@ pipeline {
             }
         }
 
-        stage('Update Kubernetes Deploy File') {
+        stage('Kubernetes Deploy File') {
             steps {
                 sh """
                   sed -i "s|${DOCKER_HUB_USER}/${IMAGE_NAME}:v[0-9]*|${DOCKER_HUB_USER}/${IMAGE_NAME}:v${BUILD_NUMBER}|g" ${DEPLOY_FILE}
@@ -49,11 +43,16 @@ pipeline {
 
         stage('Kubernetes Deploy') {
             steps {
-                sh """
-                  kubectl apply -f server-deploy.yaml --validate=false
-                  kubectl rollout restart deployment serverm
-                  kubectl get pods -o wide
-                """
+                // Use the kubeconfig credentials you added in Jenkins
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh '''
+                      echo "Using kubeconfig at $KUBECONFIG"
+                      kubectl config get-contexts
+                      kubectl apply -f server-deploy.yaml --validate=false
+                      kubectl rollout restart deployment serverm
+                      kubectl get pods -o wide
+                    '''
+                }
             }
         }
     }
