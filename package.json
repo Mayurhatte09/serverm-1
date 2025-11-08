@@ -1,8 +1,18 @@
 {
+  "name": "serverm",
+  "version": "1.0.0",
+  "description": "Backend API for CRUD operations with MongoDB and Express",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "mongoose": "^8.18.0",
+    "mongoose": "^8.18.0"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.10"
   }
 }
