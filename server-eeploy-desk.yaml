@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: serverm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: serverm
+  template:
+    metadata:
+      labels:
+        app: serverm
+    spec:
+      containers:
+      - name: serverm
+        image: server-2
+        ports:
+        - containerPort: 3000
+        env:
+        - name: MONGO_URL
+          value: mongodb://mongo:27017/mydb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: serverm-service
+spec:
+  selector:
+    app: serverm
+  ports:
+  - port: 3000
+    targetPort: 3000
+    nodePort: 30000
+  type: NodePort
